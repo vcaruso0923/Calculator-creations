@@ -6,16 +6,96 @@ import {useState} from 'react';
 
 export default function Home() {
 
+// One of the most important parts of development isn't development at all. It's called 'pseudo-coding'
+// Basically, we need to be able to break down a problem into small pieces / steps.
+// I.e. we want to understand what we want the application to do, and then define steps to make it do that.
+// I'll give you an example here of how I would pseudo code this. 
+
+// We have 4 different 'types' of buttons on a calculator. Here's what we need:
+
+
+// 1. A number button (1, 2, 3, etc.). When we click this, it needs to be displayed on the screen. There needs
+// to be two useStates to store both the first entered number, and the seccond entered number after an
+// opperator button is selected. 
+
+
+// 2. An opperator button (+, -, etc.). When we click one of these, we need to display it. It will also force the
+// calculator to stop looking for the first entered number and start looking for a seccond entered number. It should
+// also perform the operation if there is a first entered number, a seccond entered number, and an opperator in state.
+// For example, if a user enters 3 + 3 and then clicks the plus sign again, we need to perform 3 + 3, show the answer
+// add the sum of 3 + 3 as the new 'first entered number' and then the set the most recently clicked operator as thecurrent.
+
+
+// 3. An equals sign (=). If there is a first entered number, a seccond entered number, and an opperator in state,
+// the equals sign will perform the operation and then display the result
+
+
+// 4. A clear button. This will empty all states and display nothing on the screen. 
+
+
+// So basically this is all the logic we really need to make this work. We should create a serparate function
+// to handle each case, and then add the functions to the 'onClick' prop as necessary. I wrote some 
+// code below but didn't have a lot of time, so no idea if it actually works...
+// but this is pretty much how I would proceed after setting up the pseudo-code:
+
+
+// First, these are all the states we are going to need:
+const [firstEnteredNumber, setFirstEnteredNumber] = useState('')
+const [secondEnteredNumber, setSecondEnteredNumber] = useState('')
+const [currentOperator, setCurrentOpperator] = useState('')
 const [area, setArea] = useState('')
 
-const display = (e) => {
-  setArea(area + e.target.value);
+// We'll use the display function you wrote above:
+const display = (toDisplay) => {
+  setArea(toDisplay);
 }
 
-const clear = () => {
+// We should also create a function to perform operation
+const performOperation = () => {
+  // I think the eval function takes a string and evaluates it. you may need to look up exactly how to do this
+  return eval(firstEnteredNumber + currentOperator + secondEnteredNumber)
+}
+
+// 1. 
+const onNumberClick = (e) => {
+  if (!currentOperator) {
+    setFirstEnteredNumber(firstEnteredNumber + e.target.calue)
+    display(firstEnteredNumber)
+  } else {
+    setSecondEnteredNumber(secondEnteredNumber + e.target.value)
+    display(secondEnteredNumber)
+  }
+}
+
+// 2. 
+const onOperatorClick = (e) => {
+  if (firstEnteredNumber && currentOperator && secondEnteredNumber) {
+    setFirstEnteredNumber(performOperation)
+    setSecondEnteredNumber('')
+    setCurrentOpperator(e.target.value)
+    display(currentOperator)
+  } else if (firstEnteredNumber && !currentOperator && !secondEnteredNumber) {
+    setCurrentOpperator(e.target.value)
+    display(currentOperator)
+  } else {
+    return
+  }
+}
+
+// 3. 
+const onEqualsClick = (e) => {
+  setFirstEnteredNumber(performOperation)
+  display(firstEnteredNumber)
+}
+
+
+// 4.
+const onClickClear = () => {
   setArea('');
+  setCurrentOpperator('')
+  setFirstEnteredNumber('')
+  setSecondEnteredNumber('')
 }
-
 
 
 
@@ -36,23 +116,23 @@ const clear = () => {
        <div className={styles.calculatorBase}>
 
 
-<button className={styles.calcButton} onClick={display} value= '0' > 0 </button>
-<button className={styles.calcButton} onClick={display} value= '1' > 1 </button>
-<button className={styles.calcButton} onClick={display} value= '2' > 2 </button>
-<button className={styles.calcButton} onClick={display} value= '3' > 3 </button>
-<button className={styles.calcButton} onClick={display} value= '4' > 4 </button>
-<button className={styles.calcButton} onClick={display} value= '5' > 5 </button>
-<button className={styles.calcButton} onClick={display} value= '6' > 6 </button>
-<button className={styles.calcButton} onClick={display} value= '7' > 7 </button>
-<button className={styles.calcButton} onClick={display} value= '8' > 8 </button>
-<button className={styles.calcButton} onClick={display} value= '9' > 9 </button>
-<button className={styles.calcButton} onClick={display} value= '.' > . </button>
-<button className={styles.calcButton} onClick={display} value= {'+'} > + </button>
-<button className={styles.calcButton} onClick={display} value= '-' > - </button>
-<button className={styles.calcButton} onClick={display} value= '%' > % </button>
-<button className={styles.calcButton} onClick={display} value= '*' > * </button>
-<button className={styles.calcButton} onClick={display} value= '=' > = </button>
-<button className={styles.calcButton} onClick={clear} > Clear </button>
+<button className={styles.calcButton} onClick={onNumberClick} value= '0' > 0 </button>
+<button className={styles.calcButton} onClick={onNumberClick} value= '1' > 1 </button>
+<button className={styles.calcButton} onClick={onNumberClick} value= '2' > 2 </button>
+<button className={styles.calcButton} onClick={onNumberClick} value= '3' > 3 </button>
+<button className={styles.calcButton} onClick={onNumberClick} value= '4' > 4 </button>
+<button className={styles.calcButton} onClick={onNumberClick} value= '5' > 5 </button>
+<button className={styles.calcButton} onClick={onNumberClick} value= '6' > 6 </button>
+<button className={styles.calcButton} onClick={onNumberClick} value= '7' > 7 </button>
+<button className={styles.calcButton} onClick={onNumberClick} value= '8' > 8 </button>
+<button className={styles.calcButton} onClick={onNumberClick} value= '9' > 9 </button>
+<button className={styles.calcButton} onClick={onNumberClick} value= '.' > . </button>
+<button className={styles.calcButton} onClick={onOperatorClick} value= {'+'} > + </button>
+<button className={styles.calcButton} onClick={onOperatorClick} value= '-' > - </button>
+<button className={styles.calcButton} onClick={onOperatorClick} value= '%' > % </button>
+<button className={styles.calcButton} onClick={onOperatorClick} value= '*' > * </button>
+<button className={styles.calcButton} onClick={onEqualsClick} value= '=' > = </button>
+<button className={styles.calcButton} onClick={onClickClear} > Clear </button>
 
 
 
